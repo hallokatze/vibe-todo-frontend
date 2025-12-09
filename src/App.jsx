@@ -19,6 +19,7 @@ function App() {
     try {
       setLoading(true)
       setError(null)
+      
       const response = await fetch(API_BASE_URL)
       if (!response.ok) {
         throw new Error('할일 목록을 불러오는데 실패했습니다.')
@@ -26,8 +27,11 @@ function App() {
       const data = await response.json()
       setTodos(data)
     } catch (err) {
-      setError(err.message)
+      // 에러가 발생해도 화면이 사라지지 않도록 빈 배열로 설정
+      setTodos([])
+      setError(err.message || '할일 목록을 불러오는데 실패했습니다. 백엔드 서버를 확인해주세요.')
       console.error('할일 조회 에러:', err)
+      console.error('API_BASE_URL:', API_BASE_URL)
     } finally {
       setLoading(false)
     }
