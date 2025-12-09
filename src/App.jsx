@@ -14,6 +14,9 @@ function App() {
   const [error, setError] = useState(null)
   const [currentTime, setCurrentTime] = useState(new Date())
 
+  // todos를 항상 배열로 보장하는 헬퍼
+  const safeTodos = Array.isArray(todos) ? todos : []
+
   // 할일 목록 조회
   const fetchTodos = async () => {
     try {
@@ -417,11 +420,11 @@ function App() {
         {/* 할일 목록 */}
         {loading ? (
           <div className="loading">로딩 중...</div>
-        ) : !Array.isArray(todos) || todos.length === 0 ? (
+        ) : safeTodos.length === 0 ? (
           <div className="empty-state">할일이 없습니다. 새로운 할일을 추가해보세요!</div>
         ) : (
           <ul className="todo-list">
-            {todos.map((todo) => (
+            {safeTodos.map((todo) => (
               <li key={todo._id} className="todo-item">
                 {editingId === todo._id ? (
                   <div className="edit-mode">
