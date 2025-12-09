@@ -64,8 +64,15 @@ function App() {
         return
       }
       
-      console.log('API 호출 시작:', API_BASE_URL)
-      const response = await fetch(API_BASE_URL)
+      // URL이 /todos로 끝나지 않으면 추가
+      let finalUrl = API_BASE_URL
+      if (!finalUrl.endsWith('/todos')) {
+        finalUrl = finalUrl.replace(/\/+$/, '') + '/todos'
+      }
+      
+      console.log('API 호출 시작:', finalUrl)
+      console.log('원본 API_BASE_URL:', API_BASE_URL)
+      const response = await fetch(finalUrl)
       
       console.log('응답 상태:', response.status, response.statusText)
       console.log('응답 헤더:', response.headers.get('content-type'))
