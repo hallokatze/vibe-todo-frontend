@@ -137,7 +137,10 @@ function App() {
       setError(null)
       const requestBody = { title: newTodo.trim() }
       if (newDeadline) {
+        // datetime-local은 로컬 시간이므로, UTC로 변환하지 않고 그대로 전송
+        // 백엔드에서 로컬 시간으로 저장하도록 함
         requestBody.deadline = newDeadline
+        console.log('할일 추가 - 전송할 deadline:', newDeadline)
       }
 
       const response = await fetch(API_BASE_URL, {
@@ -248,12 +251,14 @@ function App() {
       if (typeof deadline === 'string') {
         // ISO 8601 형식인지 확인
         if (deadline.includes('T')) {
-          // 시간대 정보가 없으면 로컬 시간으로 해석
-          if (!deadline.includes('Z') && !deadline.includes('+') && !deadline.includes('-', 10)) {
-            // YYYY-MM-DDTHH:mm 형식이면 그대로 사용 (로컬 시간)
+          // UTC 표시(Z)가 있으면 UTC로 해석 후 로컬 시간으로 변환
+          if (deadline.includes('Z') || deadline.match(/[+-]\d{2}:\d{2}$/)) {
+            // UTC 또는 시간대 정보가 있으면 그대로 파싱 (자동으로 로컬 시간으로 변환됨)
             date = new Date(deadline)
           } else {
-            // UTC 또는 시간대 정보가 있으면 그대로 파싱
+            // 시간대 정보가 없는 경우 (YYYY-MM-DDTHH:mm 형식)
+            // 백엔드에서 로컬 시간으로 저장했다고 가정하고, 그대로 로컬 시간으로 해석
+            // 하지만 new Date()는 시간대 정보가 없으면 로컬 시간으로 해석하므로 문제 없음
             date = new Date(deadline)
           }
         } else {
@@ -273,7 +278,9 @@ function App() {
         return '날짜 형식 오류'
       }
       
-      console.log('formatDeadline - 파싱된 날짜:', date.toISOString(), '로컬 시간:', date.toString())
+      console.log('formatDeadline - 파싱된 날짜 UTC:', date.toISOString())
+      console.log('formatDeadline - 파싱된 날짜 로컬:', date.toString())
+      console.log('formatDeadline - 로컬 시간대 오프셋:', date.getTimezoneOffset(), '분')
     } catch (error) {
       console.error('날짜 파싱 에러:', error, deadline)
       return '날짜 파싱 오류'
@@ -286,7 +293,9 @@ function App() {
     const hours = String(date.getHours()).padStart(2, '0')
     const minutes = String(date.getMinutes()).padStart(2, '0')
     
-    return `${year}-${month}-${day} ${hours}:${minutes}`
+    const formatted = `${year}-${month}-${day} ${hours}:${minutes}`
+    console.log('formatDeadline - 최종 포맷된 날짜:', formatted)
+    return formatted
   }
 
   // 마감 일시가 지났는지 확인
