@@ -235,15 +235,57 @@ function App() {
     }
   }
 
-  // 마감 일시 포맷팅
+  // 마감 일시 포맷팅 (로컬 시간대로 표시)
   const formatDeadline = (deadline) => {
     if (!deadline) return null
-    const date = new Date(deadline)
+    
+    // 디버깅: 백엔드에서 받은 원본 값 확인
+    console.log('formatDeadline - 원본 deadline:', deadline, '타입:', typeof deadline)
+    
+    let date
+    try {
+      // 백엔드에서 받은 날짜 처리
+      if (typeof deadline === 'string') {
+        // ISO 8601 형식인지 확인
+        if (deadline.includes('T')) {
+          // 시간대 정보가 없으면 로컬 시간으로 해석
+          if (!deadline.includes('Z') && !deadline.includes('+') && !deadline.includes('-', 10)) {
+            // YYYY-MM-DDTHH:mm 형식이면 그대로 사용 (로컬 시간)
+            date = new Date(deadline)
+          } else {
+            // UTC 또는 시간대 정보가 있으면 그대로 파싱
+            date = new Date(deadline)
+          }
+        } else {
+          // 날짜만 있는 경우
+          date = new Date(deadline)
+        }
+      } else if (deadline instanceof Date) {
+        date = deadline
+      } else {
+        // 다른 형식 (예: 타임스탬프)
+        date = new Date(deadline)
+      }
+      
+      // 유효한 날짜인지 확인
+      if (isNaN(date.getTime())) {
+        console.error('유효하지 않은 날짜:', deadline)
+        return '날짜 형식 오류'
+      }
+      
+      console.log('formatDeadline - 파싱된 날짜:', date.toISOString(), '로컬 시간:', date.toString())
+    } catch (error) {
+      console.error('날짜 파싱 에러:', error, deadline)
+      return '날짜 파싱 오류'
+    }
+    
+    // 로컬 시간대로 포맷팅
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
     const day = String(date.getDate()).padStart(2, '0')
     const hours = String(date.getHours()).padStart(2, '0')
     const minutes = String(date.getMinutes()).padStart(2, '0')
+    
     return `${year}-${month}-${day} ${hours}:${minutes}`
   }
 
