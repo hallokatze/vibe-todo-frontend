@@ -3,25 +3,39 @@ import './App.css'
 
 // 환경 변수에서 API URL 가져오기
 const envUrl = import.meta.env.VITE_API_BASE_URL
-
-// 프로덕션 환경에서는 환경 변수가 필수
 const isProduction = import.meta.env.PROD
 
-// 환경 변수가 있으면 사용, 없으면 기본값
-let API_BASE_URL
-if (envUrl && envUrl.trim() !== '') {
-  // 환경 변수가 있으면 사용 (끝에 /todos가 없으면 추가)
-  const cleanUrl = envUrl.trim().replace(/\/$/, '') // 끝의 슬래시 제거
-  API_BASE_URL = cleanUrl.endsWith('/todos') ? cleanUrl : `${cleanUrl}/todos`
-} else if (isProduction) {
-  API_BASE_URL = ''
-  console.error('프로덕션 환경에서 VITE_API_BASE_URL 환경 변수가 설정되지 않았습니다!')
-} else {
-  API_BASE_URL = 'http://localhost:5000/todos'
+// API URL 구성 함수 (런타임에 실행)
+function getApiBaseUrl() {
+  if (envUrl && envUrl.trim() !== '') {
+    // 환경 변수가 있으면 사용
+    let cleanUrl = envUrl.trim()
+    
+    // 끝의 슬래시 제거
+    cleanUrl = cleanUrl.replace(/\/+$/, '')
+    
+    // /todos가 없으면 추가
+    if (!cleanUrl.endsWith('/todos')) {
+      return `${cleanUrl}/todos`
+    } else {
+      return cleanUrl
+    }
+  } else if (isProduction) {
+    console.error('프로덕션 환경에서 VITE_API_BASE_URL 환경 변수가 설정되지 않았습니다!')
+    return ''
+  } else {
+    return 'http://localhost:5000/todos'
+  }
 }
 
+const API_BASE_URL = getApiBaseUrl()
+
+// 디버깅 로그
+console.log('=== API URL 설정 ===')
 console.log('환경 변수 VITE_API_BASE_URL:', envUrl)
-console.log('사용할 API_BASE_URL:', API_BASE_URL)
+console.log('프로덕션 모드:', isProduction)
+console.log('최종 API_BASE_URL:', API_BASE_URL)
+console.log('==================')
 
 function App() {
   const [todos, setTodos] = useState([])
