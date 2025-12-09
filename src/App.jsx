@@ -6,11 +6,22 @@ const envUrl = import.meta.env.VITE_API_BASE_URL
 
 // 프로덕션 환경에서는 환경 변수가 필수
 const isProduction = import.meta.env.PROD
-const API_BASE_URL = envUrl || (isProduction ? '' : 'http://localhost:5000/todos')
 
-if (isProduction && !envUrl) {
+// 환경 변수가 있으면 사용, 없으면 기본값
+let API_BASE_URL
+if (envUrl && envUrl.trim() !== '') {
+  // 환경 변수가 있으면 사용 (끝에 /todos가 없으면 추가)
+  const cleanUrl = envUrl.trim().replace(/\/$/, '') // 끝의 슬래시 제거
+  API_BASE_URL = cleanUrl.endsWith('/todos') ? cleanUrl : `${cleanUrl}/todos`
+} else if (isProduction) {
+  API_BASE_URL = ''
   console.error('프로덕션 환경에서 VITE_API_BASE_URL 환경 변수가 설정되지 않았습니다!')
+} else {
+  API_BASE_URL = 'http://localhost:5000/todos'
 }
+
+console.log('환경 변수 VITE_API_BASE_URL:', envUrl)
+console.log('사용할 API_BASE_URL:', API_BASE_URL)
 
 function App() {
   const [todos, setTodos] = useState([])
