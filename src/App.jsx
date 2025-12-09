@@ -1,7 +1,16 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/todos'
+// 환경 변수에서 API URL 가져오기
+const envUrl = import.meta.env.VITE_API_BASE_URL
+
+// 프로덕션 환경에서는 환경 변수가 필수
+const isProduction = import.meta.env.PROD
+const API_BASE_URL = envUrl || (isProduction ? '' : 'http://localhost:5000/todos')
+
+if (isProduction && !envUrl) {
+  console.error('프로덕션 환경에서 VITE_API_BASE_URL 환경 변수가 설정되지 않았습니다!')
+}
 
 function App() {
   const [todos, setTodos] = useState([])
@@ -22,6 +31,13 @@ function App() {
     try {
       setLoading(true)
       setError(null)
+      
+      // API_BASE_URL이 없으면 에러 표시
+      if (!API_BASE_URL) {
+        setError('백엔드 서버 URL이 설정되지 않았습니다. Vercel 환경 변수를 확인해주세요.')
+        setLoading(false)
+        return
+      }
       
       console.log('API 호출 시작:', API_BASE_URL)
       const response = await fetch(API_BASE_URL)
