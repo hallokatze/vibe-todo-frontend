@@ -1,0 +1,911 @@
+.app {
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+}
+
+.forest-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* 하늘 배경 */
+.sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: background 2s ease-in-out;
+}
+
+.app.day .sky {
+  background: linear-gradient(to bottom, #FFE5B4 0%, #FFF8DC 50%, #FFE5B4 100%);
+}
+
+.app.night .sky {
+  background: linear-gradient(to bottom, #1a3a1a 0%, #0d1f0d 50%, #1a3a1a 100%);
+}
+
+/* 나무 잎 상단 띠 */
+.tree-canopy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  z-index: 1;
+  background: 
+    radial-gradient(ellipse 200px 80px at 10% 50%, #2d5016 0%, transparent 50%),
+    radial-gradient(ellipse 180px 70px at 30% 40%, #1f3a0f 0%, transparent 50%),
+    radial-gradient(ellipse 220px 90px at 50% 50%, #2d5016 0%, transparent 50%),
+    radial-gradient(ellipse 190px 75px at 70% 45%, #1f3a0f 0%, transparent 50%),
+    radial-gradient(ellipse 210px 85px at 90% 50%, #2d5016 0%, transparent 50%);
+  transition: background 2s ease-in-out;
+}
+
+.app.night .tree-canopy {
+  background: 
+    radial-gradient(ellipse 200px 80px at 10% 50%, #1a3a1a 0%, transparent 50%),
+    radial-gradient(ellipse 180px 70px at 30% 40%, #0d1f0d 0%, transparent 50%),
+    radial-gradient(ellipse 220px 90px at 50% 50%, #1a3a1a 0%, transparent 50%),
+    radial-gradient(ellipse 190px 75px at 70% 45%, #0d1f0d 0%, transparent 50%),
+    radial-gradient(ellipse 210px 85px at 90% 50%, #1a3a1a 0%, transparent 50%);
+}
+
+/* 낮 배경 - 나비들 */
+.app.day .sky::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 15%;
+  width: 20px;
+  height: 20px;
+  background: #FFD700;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  transform: rotate(45deg);
+  animation: butterfly1 8s ease-in-out infinite;
+  box-shadow: 
+    30px 20px 0 -5px #FF6B9D,
+    60px 40px 0 -3px #FFA500,
+    90px 10px 0 -4px #FFD700,
+    120px 30px 0 -5px #FF6B9D;
+}
+
+.app.day .sky::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  right: 20%;
+  width: 15px;
+  height: 15px;
+  background: #FFA500;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  transform: rotate(-30deg);
+  animation: butterfly2 10s ease-in-out infinite;
+  box-shadow: 
+    -40px 25px 0 -4px #FFD700,
+    -80px 15px 0 -3px #FF6B9D;
+}
+
+@keyframes butterfly1 {
+  0%, 100% { transform: translate(0, 0) rotate(45deg); }
+  25% { transform: translate(20px, -30px) rotate(50deg); }
+  50% { transform: translate(40px, -20px) rotate(40deg); }
+  75% { transform: translate(20px, -40px) rotate(50deg); }
+}
+
+@keyframes butterfly2 {
+  0%, 100% { transform: translate(0, 0) rotate(-30deg); }
+  25% { transform: translate(-30px, -20px) rotate(-25deg); }
+  50% { transform: translate(-50px, -30px) rotate(-35deg); }
+  75% { transform: translate(-30px, -40px) rotate(-25deg); }
+}
+
+/* 밤 배경 - 별들 */
+.app.night .star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.app.night .star::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: white;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.app.night .star::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 100%;
+  background: white;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.app.night .star1 { top: 15%; left: 20%; width: 4px; height: 4px; animation-delay: 0s; }
+.app.night .star2 { top: 25%; left: 70%; width: 3px; height: 3px; animation-delay: 0.3s; }
+.app.night .star3 { top: 10%; left: 50%; width: 5px; height: 5px; animation-delay: 0.6s; }
+.app.night .star4 { top: 20%; left: 35%; width: 3px; height: 3px; animation-delay: 0.9s; }
+.app.night .star5 { top: 30%; left: 60%; width: 4px; height: 4px; animation-delay: 1.2s; }
+.app.night .star6 { top: 5%; left: 80%; width: 3px; height: 3px; animation-delay: 1.5s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+/* 나무들 */
+.trees {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80%;
+  z-index: 1;
+}
+
+/* 뒤쪽 나무 실루엣 (밤에만) */
+.app.night .trees::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(to right, 
+      transparent 0%,
+      rgba(0,0,0,0.3) 20%,
+      rgba(0,0,0,0.4) 40%,
+      rgba(0,0,0,0.3) 60%,
+      rgba(0,0,0,0.4) 80%,
+      transparent 100%
+    );
+  z-index: 0;
+}
+
+.tree {
+  position: absolute;
+  bottom: 0;
+}
+
+/* 나무 잎 (둥근 구름 모양) */
+.tree::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 100px;
+  background: #2d5016;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: 
+    -20px -10px 0 -5px #1f3a0f,
+    20px -10px 0 -5px #1f3a0f,
+    -40px -20px 0 -10px #2d5016,
+    40px -20px 0 -10px #2d5016,
+    -60px -30px 0 -15px #1f3a0f,
+    60px -30px 0 -15px #1f3a0f;
+  z-index: 2;
+}
+
+.app.night .tree::before {
+  background: #1a3a1a;
+  box-shadow: 
+    -20px -10px 0 -5px #0d1f0d,
+    20px -10px 0 -5px #0d1f0d,
+    -40px -20px 0 -10px #1a3a1a,
+    40px -20px 0 -10px #1a3a1a,
+    -60px -30px 0 -15px #0d1f0d,
+    60px -30px 0 -15px #0d1f0d;
+}
+
+/* 덩굴 (밤에만) */
+.tree .vine {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 60px;
+  background: #0d1f0d;
+  border-radius: 2px;
+  z-index: 1;
+  animation: vineSway 3s ease-in-out infinite;
+}
+
+.tree .vine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0d1f0d;
+  border-radius: 2px;
+  transform: rotate(15deg);
+  box-shadow: 
+    0 50px 0 -1px #0d1f0d,
+    0 100px 0 -2px #0d1f0d,
+    0 150px 0 -3px #0d1f0d;
+}
+
+.tree1 .vine { animation-delay: 0s; }
+.tree2 .vine { animation-delay: 0.5s; }
+.tree3 .vine { animation-delay: 1s; }
+.tree4 .vine { animation-delay: 1.5s; }
+.tree5 .vine { animation-delay: 2s; }
+
+@keyframes vineSway {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  50% { transform: translateX(-50%) rotate(5deg); }
+}
+
+/* 나무 기둥 */
+.tree::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25px;
+  height: 120px;
+  background: #8B4513;
+  border-radius: 5px;
+  box-shadow: 
+    inset -3px 0 0 rgba(0,0,0,0.2),
+    inset 3px 0 0 rgba(255,255,255,0.1);
+}
+
+.app.night .tree::after {
+  background: #5a2a0a;
+}
+
+/* 나무 1 */
+.tree1 {
+  left: 5%;
+  width: 100px;
+  height: 200px;
+  animation: sway 4s ease-in-out infinite;
+}
+
+.tree1::before {
+  width: 100px;
+  height: 90px;
+  bottom: 100px;
+}
+
+.tree1::after {
+  width: 20px;
+  height: 100px;
+}
+
+/* 나무 2 */
+.tree2 {
+  left: 20%;
+  width: 120px;
+  height: 220px;
+  animation: sway 5s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.tree2::before {
+  width: 120px;
+  height: 110px;
+  bottom: 110px;
+}
+
+.tree2::after {
+  width: 25px;
+  height: 110px;
+}
+
+/* 나무 3 */
+.tree3 {
+  left: 40%;
+  width: 110px;
+  height: 210px;
+  animation: sway 4.5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.tree3::before {
+  width: 110px;
+  height: 100px;
+  bottom: 105px;
+}
+
+.tree3::after {
+  width: 22px;
+  height: 105px;
+}
+
+/* 나무 4 */
+.tree4 {
+  left: 60%;
+  width: 130px;
+  height: 230px;
+  animation: sway 5.5s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.tree4::before {
+  width: 130px;
+  height: 120px;
+  bottom: 115px;
+}
+
+.tree4::after {
+  width: 28px;
+  height: 115px;
+}
+
+/* 나무 5 */
+.tree5 {
+  left: 80%;
+  width: 105px;
+  height: 205px;
+  animation: sway 4.8s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.tree5::before {
+  width: 105px;
+  height: 95px;
+  bottom: 102px;
+}
+
+.tree5::after {
+  width: 21px;
+  height: 102px;
+}
+
+/* 덩굴 (밤에만) */
+.app.night .tree::before {
+  position: relative;
+}
+
+.app.night .tree1::before {
+  box-shadow: 
+    -20px -10px 0 -5px #0d1f0d,
+    20px -10px 0 -5px #0d1f0d,
+    -40px -20px 0 -10px #1a3a1a,
+    40px -20px 0 -10px #1a3a1a,
+    -60px -30px 0 -15px #0d1f0d,
+    60px -30px 0 -15px #0d1f0d,
+    0 50px 0 -5px #0d1f0d,
+    0 70px 0 -8px #0d1f0d,
+    0 90px 0 -10px #0d1f0d;
+}
+
+@keyframes sway {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(3px) rotate(1deg); }
+  75% { transform: translateX(-3px) rotate(-1deg); }
+}
+
+/* 땅 */
+.ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  z-index: 2;
+}
+
+/* 풀밭 */
+.ground::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: #90EE90;
+  border-top: 5px solid #7CCD7C;
+  box-shadow: 
+    inset 0 -10px 20px rgba(0,0,0,0.1),
+    0 5px 0 #7CCD7C;
+}
+
+.app.night .ground::before {
+  background: #5a8a5a;
+  border-top-color: #4a7a4a;
+  box-shadow: 
+    inset 0 -10px 20px rgba(0,0,0,0.2),
+    0 5px 0 #4a7a4a;
+}
+
+/* 흙 */
+.ground::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: #8B7355;
+  border-top: 3px solid #6B5B3D;
+}
+
+.app.night .ground::after {
+  background: #5a4a3a;
+  border-top-color: #4a3a2a;
+}
+
+/* 덤불 */
+.ground {
+  background-image: 
+    radial-gradient(circle at 10% 20%, #7CCD7C 0%, transparent 50%),
+    radial-gradient(circle at 30% 40%, #7CCD7C 0%, transparent 50%),
+    radial-gradient(circle at 50% 30%, #7CCD7C 0%, transparent 50%),
+    radial-gradient(circle at 70% 25%, #7CCD7C 0%, transparent 50%),
+    radial-gradient(circle at 90% 35%, #7CCD7C 0%, transparent 50%);
+  background-size: 80px 80px, 100px 100px, 90px 90px, 85px 85px, 95px 95px;
+  background-position: 5% 10%, 25% 30%, 45% 20%, 65% 15%, 85% 25%;
+  background-repeat: no-repeat;
+}
+
+.app.night .ground {
+  background-image: 
+    radial-gradient(circle at 10% 20%, #4a7a4a 0%, transparent 50%),
+    radial-gradient(circle at 30% 40%, #4a7a4a 0%, transparent 50%),
+    radial-gradient(circle at 50% 30%, #4a7a4a 0%, transparent 50%),
+    radial-gradient(circle at 70% 25%, #4a7a4a 0%, transparent 50%),
+    radial-gradient(circle at 90% 35%, #4a7a4a 0%, transparent 50%);
+}
+
+/* 바위 */
+.ground .rock {
+  position: absolute;
+  background: #A9A9A9;
+  border-radius: 20% 30% 25% 35%;
+  box-shadow: 
+    inset -5px -5px 0 rgba(0,0,0,0.2),
+    inset 3px 3px 0 rgba(255,255,255,0.3);
+  z-index: 3;
+}
+
+.app.night .ground .rock {
+  background: #696969;
+}
+
+.rock1 {
+  bottom: 5%;
+  left: 10%;
+  width: 40px;
+  height: 30px;
+}
+
+.rock2 {
+  bottom: 8%;
+  left: 45%;
+  width: 35px;
+  height: 25px;
+}
+
+.rock3 {
+  bottom: 6%;
+  right: 15%;
+  width: 45px;
+  height: 32px;
+}
+
+/* 버섯 */
+.ground .mushroom {
+  position: absolute;
+  bottom: 12%;
+  width: 20px;
+  height: 25px;
+  z-index: 3;
+}
+
+.ground .mushroom::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 15px;
+  background: white;
+  border-radius: 3px;
+}
+
+.ground .mushroom::after {
+  content: '';
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 12px;
+  background: #FF4444;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: 
+    -3px -2px 0 2px white,
+    3px -2px 0 2px white,
+    -5px -4px 0 2px white,
+    5px -4px 0 2px white;
+}
+
+.mushroom1 {
+  left: 8%;
+}
+
+.mushroom2 {
+  left: 50%;
+}
+
+.mushroom3 {
+  right: 12%;
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(45, 80, 22, 0.2);
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 2rem;
+  position: relative;
+  z-index: 10;
+}
+
+h1 {
+  color: #2d5016;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(45, 80, 22, 0.1);
+}
+
+.current-time {
+  text-align: center;
+  color: #4a7a4a;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+}
+
+.error-message {
+  background: rgba(255, 235, 235, 0.9);
+  color: #d32f2f;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(211, 47, 47, 0.3);
+  box-shadow: 0 2px 4px rgba(211, 47, 47, 0.1);
+}
+
+.todo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.form-inputs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.todo-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid #7CCD7C;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d5016;
+}
+
+.todo-input:focus {
+  outline: none;
+  border-color: #4a7a4a;
+  box-shadow: 0 0 0 3px rgba(74, 122, 74, 0.1);
+  background: white;
+}
+
+.todo-input::placeholder {
+  color: #90EE90;
+}
+
+.deadline-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid #7CCD7C;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  min-width: 200px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d5016;
+}
+
+.deadline-input:focus {
+  outline: none;
+  border-color: #4a7a4a;
+  box-shadow: 0 0 0 3px rgba(74, 122, 74, 0.1);
+  background: white;
+}
+
+.add-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #4a7a4a 0%, #2d5016 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(45, 80, 22, 0.2);
+}
+
+.add-button:hover {
+  background: linear-gradient(135deg, #5a8a5a 0%, #3d602d 100%);
+  box-shadow: 0 6px 8px rgba(45, 80, 22, 0.3);
+  transform: translateY(-1px);
+}
+
+.add-button:active {
+  transform: scale(0.98);
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #4a7a4a;
+  font-weight: 500;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #7CCD7C;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.todo-item {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(124, 205, 124, 0.3);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.todo-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 80, 22, 0.15);
+  border-color: rgba(124, 205, 124, 0.5);
+}
+
+.todo-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.todo-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.todo-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.todo-title {
+  font-size: 1rem;
+  color: #2d5016;
+  word-break: break-word;
+  font-weight: 500;
+}
+
+.todo-content.todo-inactive .todo-title {
+  color: #999;
+  text-decoration: line-through;
+}
+
+.todo-content.todo-inactive {
+  opacity: 0.6;
+  background: #f0f0f0;
+}
+
+.expired-badge {
+  font-size: 0.85rem;
+  color: #8B7355;
+  font-weight: 500;
+  background: rgba(139, 115, 85, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.todo-deadline {
+  font-size: 0.85rem;
+  color: #4a7a4a;
+  font-weight: 500;
+}
+
+.todo-deadline.deadline-passed {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.time-remaining {
+  display: block !important;
+  font-size: 0.85rem;
+  color: #4a7a4a;
+  font-weight: 500;
+  font-style: italic;
+  margin-top: 0.4rem;
+  padding-left: 0.3rem;
+  border-left: 2px solid #90EE90;
+  padding-left: 0.5rem;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-button,
+.delete-button,
+.complete-button,
+.save-button,
+.cancel-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.complete-button {
+  background: linear-gradient(135deg, #90EE90 0%, #7CCD7C 100%);
+  color: #2d5016;
+  font-weight: 600;
+}
+
+.complete-button:hover {
+  background: linear-gradient(135deg, #a0f0a0 0%, #8cdd8c 100%);
+  box-shadow: 0 2px 4px rgba(45, 80, 22, 0.2);
+}
+
+.complete-button.completed {
+  background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+  color: white;
+}
+
+.complete-button.completed:hover {
+  background: linear-gradient(135deg, #aeaeae 0%, #858585 100%);
+}
+
+.edit-button {
+  background: linear-gradient(135deg, #4a7a4a 0%, #2d5016 100%);
+  color: white;
+}
+
+.edit-button:hover {
+  background: linear-gradient(135deg, #5a8a5a 0%, #3d602d 100%);
+  box-shadow: 0 2px 4px rgba(45, 80, 22, 0.2);
+}
+
+.delete-button {
+  background: #f44336;
+  color: white;
+}
+
+.delete-button:hover {
+  background: #da190b;
+}
+
+.save-button {
+  background: linear-gradient(135deg, #4a7a4a 0%, #2d5016 100%);
+  color: white;
+}
+
+.save-button:hover {
+  background: linear-gradient(135deg, #5a8a5a 0%, #3d602d 100%);
+  box-shadow: 0 2px 4px rgba(45, 80, 22, 0.2);
+}
+
+.cancel-button {
+  background: #9e9e9e;
+  color: white;
+}
+
+.cancel-button:hover {
+  background: #757575;
+}
+
+.edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.edit-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid #7CCD7C;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d5016;
+  transition: all 0.2s;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #4a7a4a;
+  box-shadow: 0 0 0 3px rgba(74, 122, 74, 0.1);
+  background: white;
+}
+
+.edit-deadline-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid #7CCD7C;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d5016;
+  transition: all 0.2s;
+}
+
+.edit-deadline-input:focus {
+  outline: none;
+  border-color: #4a7a4a;
+  box-shadow: 0 0 0 3px rgba(74, 122, 74, 0.1);
+  background: white;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
