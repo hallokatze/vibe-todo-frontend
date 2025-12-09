@@ -25,7 +25,15 @@ function App() {
         throw new Error('할일 목록을 불러오는데 실패했습니다.')
       }
       const data = await response.json()
-      setTodos(data)
+      
+      // 배열인지 확인하고, 배열이 아니면 빈 배열로 설정
+      if (Array.isArray(data)) {
+        setTodos(data)
+      } else {
+        console.warn('API 응답이 배열이 아닙니다:', data)
+        setTodos([])
+        setError('서버 응답 형식이 올바르지 않습니다.')
+      }
     } catch (err) {
       // 에러가 발생해도 화면이 사라지지 않도록 빈 배열로 설정
       setTodos([])
@@ -76,7 +84,12 @@ function App() {
       }
 
       const todo = await response.json()
-      setTodos([todo, ...todos])
+      // 배열인지 확인
+      if (Array.isArray(todos)) {
+        setTodos([todo, ...todos])
+      } else {
+        setTodos([todo])
+      }
       setNewTodo('')
       setNewDeadline('')
     } catch (err) {
@@ -138,7 +151,11 @@ function App() {
       }
 
       const updatedTodo = await response.json()
-      setTodos(todos.map(todo => todo._id === id ? updatedTodo : todo))
+      if (Array.isArray(todos)) {
+        setTodos(todos.map(todo => todo._id === id ? updatedTodo : todo))
+      } else {
+        setTodos([updatedTodo])
+      }
       setEditingId(null)
       setEditingText('')
       setEditingDeadline('')
@@ -201,7 +218,11 @@ function App() {
       }
 
       const updatedTodo = await response.json()
-      setTodos(todos.map(todo => todo._id === id ? updatedTodo : todo))
+      if (Array.isArray(todos)) {
+        setTodos(todos.map(todo => todo._id === id ? updatedTodo : todo))
+      } else {
+        setTodos([updatedTodo])
+      }
     } catch (err) {
       setError(err.message)
       console.error('할일 완료 상태 변경 에러:', err)
@@ -283,7 +304,11 @@ function App() {
         throw new Error(errorData.error || '할일 삭제에 실패했습니다.')
       }
 
-      setTodos(todos.filter(todo => todo._id !== id))
+      if (Array.isArray(todos)) {
+        setTodos(todos.filter(todo => todo._id !== id))
+      } else {
+        setTodos([])
+      }
     } catch (err) {
       setError(err.message)
       console.error('할일 삭제 에러:', err)
@@ -373,7 +398,7 @@ function App() {
         {/* 할일 목록 */}
         {loading ? (
           <div className="loading">로딩 중...</div>
-        ) : todos.length === 0 ? (
+        ) : !Array.isArray(todos) || todos.length === 0 ? (
           <div className="empty-state">할일이 없습니다. 새로운 할일을 추가해보세요!</div>
         ) : (
           <ul className="todo-list">
