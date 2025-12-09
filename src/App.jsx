@@ -20,26 +20,45 @@ function App() {
       setLoading(true)
       setError(null)
       
+      console.log('API 호출 시작:', API_BASE_URL)
       const response = await fetch(API_BASE_URL)
+      
+      console.log('응답 상태:', response.status, response.statusText)
+      console.log('응답 헤더:', response.headers.get('content-type'))
+      
       if (!response.ok) {
-        throw new Error('할일 목록을 불러오는데 실패했습니다.')
+        const errorText = await response.text()
+        console.error('응답 에러 내용:', errorText)
+        throw new Error(`할일 목록을 불러오는데 실패했습니다. (${response.status})`)
       }
+      
       const data = await response.json()
+      console.log('API 응답 데이터:', data)
+      console.log('데이터 타입:', typeof data)
+      console.log('배열 여부:', Array.isArray(data))
       
       // 배열인지 확인하고, 배열이 아니면 빈 배열로 설정
       if (Array.isArray(data)) {
         setTodos(data)
+        setError(null) // 성공 시 에러 메시지 제거
       } else {
         console.warn('API 응답이 배열이 아닙니다:', data)
+        // 백엔드가 다른 형식으로 응답할 수 있으므로, 에러 메시지를 더 자세히 표시
         setTodos([])
-        setError('서버 응답 형식이 올바르지 않습니다.')
+        setError(`서버 응답 형식이 올바르지 않습니다. (받은 데이터: ${JSON.stringify(data).substring(0, 100)})`)
       }
     } catch (err) {
       // 에러가 발생해도 화면이 사라지지 않도록 빈 배열로 설정
       setTodos([])
-      setError(err.message || '할일 목록을 불러오는데 실패했습니다. 백엔드 서버를 확인해주세요.')
+      const errorMessage = err.message || '할일 목록을 불러오는데 실패했습니다. 백엔드 서버를 확인해주세요.'
+      setError(errorMessage)
       console.error('할일 조회 에러:', err)
       console.error('API_BASE_URL:', API_BASE_URL)
+      
+      // 네트워크 에러인지 확인
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        setError('백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.')
+      }
     } finally {
       setLoading(false)
     }
